@@ -47,6 +47,9 @@ function Play() {
     setGuess("");
     setRevealed(1);
     setTries(0);
+    setQaLog([]);
+    setQuestion("");
+    setTab("guess");
     try {
       const data = await callStart({ data: { difficulty } });
       setSecret(data.country);
