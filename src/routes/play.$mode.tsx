@@ -76,7 +76,9 @@ function Play() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!secret || !guess.trim() || feedback?.kind === "right") return;
-    if (guess.trim().toLowerCase() === "give up") {
+    const normalized = guess.trim().toLowerCase().replace(/[^a-z ]/g, "").replace(/\s+/g, " ");
+    if (["give up", "giveup", "i give up", "surrender", "quit"].includes(normalized)) {
+      setGuess("");
       giveUp();
       return;
     }
