@@ -20,8 +20,13 @@ function Play() {
   const { mode } = Route.useParams();
   const difficulty = (mode === "easy" || mode === "medium" || mode === "hard" ? mode : "easy") as
     | "easy" | "medium" | "hard";
-  const router = useRouter();
   const callStart = useServerFn(startRound);
+  const callAsk = useServerFn(askQuestion);
+
+  const [tab, setTab] = useState<"guess" | "ask">("guess");
+  const [question, setQuestion] = useState("");
+  const [qaLog, setQaLog] = useState<Array<{ q: string; a: string }>>([]);
+  const [asking, setAsking] = useState(false);
 
   const [secret, setSecret] = useState<Secret | null>(null);
   const [clues, setClues] = useState<string[]>([]);
