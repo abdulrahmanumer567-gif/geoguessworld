@@ -157,30 +157,104 @@ function Play() {
           <RefreshCw className="h-4 w-4" /> Next country
         </button>
       ) : (
-        <>
-          <form onSubmit={submit} className="mt-auto flex gap-2">
-            <input
-              ref={inputRef}
-              value={guess}
-              onChange={(e) => setGuess(e.target.value)}
-              placeholder="Type a country…"
-              autoFocus
-              autoComplete="off"
-              className="flex-1 rounded-xl border border-border bg-input px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-ring"
-            />
+        <div className="mt-auto">
+          <div className="mb-3 grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1 text-sm font-medium">
             <button
-              type="submit"
-              className="btn-primary flex h-12 w-12 items-center justify-center px-0"
-              aria-label="Submit guess"
-              disabled={loading || !guess.trim()}
+              type="button"
+              onClick={() => setTab("guess")}
+              className={`rounded-lg py-2 transition ${tab === "guess" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
             >
-              <Send className="h-5 w-5" />
+              Guess
             </button>
-          </form>
-          <button onClick={giveUp} className="mt-2 text-xs text-muted-foreground active:opacity-60">
-            Give up
-          </button>
-        </>
+            <button
+              type="button"
+              onClick={() => setTab("ask")}
+              className={`flex items-center justify-center gap-1 rounded-lg py-2 transition ${tab === "ask" ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+            >
+              <HelpCircle className="h-4 w-4" /> Ask
+            </button>
+          </div>
+
+          {tab === "guess" ? (
+            <>
+              <form onSubmit={submit} className="flex gap-2">
+                <input
+                  ref={inputRef}
+                  value={guess}
+                  onChange={(e) => setGuess(e.target.value)}
+                  placeholder="Type a country…"
+                  autoComplete="off"
+                  className="flex-1 rounded-xl border border-border bg-input px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-ring"
+                />
+                <button
+                  type="submit"
+                  className="btn-primary flex h-12 w-12 items-center justify-center px-0"
+                  aria-label="Submit guess"
+                  disabled={loading || !guess.trim()}
+                >
+                  <Send className="h-5 w-5" />
+                </button>
+              </form>
+              <button onClick={giveUp} className="mt-2 text-xs text-muted-foreground active:opacity-60">
+                Give up
+              </button>
+            </>
+          ) : (
+            <>
+              {qaLog.length > 0 && (
+                <ul className="mb-3 flex max-h-56 flex-col gap-2 overflow-y-auto">
+                  {qaLog.map((item, i) => (
+                    <li key={i} className="animate-pop-in">
+                      <div className="text-xs text-muted-foreground">You: {item.q}</div>
+                      <div className="rounded-xl bg-secondary px-3 py-2 text-sm">{item.a}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!secret || !question.trim() || asking) return;
+                  const q = question.trim();
+                  setAsking(true);
+                  setQuestion("");
+                  try {
+                    const res = await callAsk({ data: { question: q, country: secret } });
+                    setQaLog((prev) => [...prev, { q, a: res.answer }]);
+                  } catch (err) {
+                    setQaLog((prev) => [
+                      ...prev,
+                      { q, a: err instanceof Error ? err.message : "Couldn't answer." },
+                    ]);
+                  } finally {
+                    setAsking(false);
+                  }
+                }}
+                className="flex gap-2"
+              >
+                <input
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="Which continent? What colors?"
+                  autoComplete="off"
+                  disabled={asking || loading}
+                  className="flex-1 rounded-xl border border-border bg-input px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-ring"
+                />
+                <button
+                  type="submit"
+                  className="btn-primary flex h-12 w-12 items-center justify-center px-0"
+                  aria-label="Ask question"
+                  disabled={asking || loading || !question.trim()}
+                >
+                  {asking ? <RefreshCw className="h-5 w-5 animate-spin" /> : <MessageCircleQuestion className="h-5 w-5" />}
+                </button>
+              </form>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Ask about the continent, colors, animals, food — but not the name!
+              </p>
+            </>
+          )}
+        </div>
       )}
     </main>
   );
