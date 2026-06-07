@@ -114,3 +114,54 @@ Be strategic: use continent, region, language, climate, size, fame, etc. Never r
   });
 
 export type RoundCountry = Pick<Country, "name" | "capital" | "continent" | "flag">;
+
+// === Ask-a-question helper (kid friendly) ===
+// Kids can ask things like "which continent?", "what colors are in the flag?",
+// "is it hot?", "is it big?" — the AI answers in a short, friendly way
+// WITHOUT revealing the country's name or capital.
+
+export const askQuestion = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      question: z.string().min(1).max(200),
+      country: z.object({
+        name: z.string(),
+        capital: z.string(),
+        continent: z.string(),
+        flag: z.string(),
+      }),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { question, country } = data;
+    const prompt = `You are a friendly helper in a country guessing game for KIDS.
+The secret country is "${country.name}" (capital: ${country.capital}, continent: ${country.continent}, flag: ${country.flag}).
+
+The kid asked: "${question}"
+
+Rules:
+- NEVER say the country's name or capital city.
+- If the question would directly reveal the name or capital, politely refuse: say something like "I can't tell you that one! 😊 Try guessing!"
+- Otherwise answer in 1 short, simple, kid-friendly sentence.
+- If they ask about the continent, the flag colors, climate, animals, food, language, size, oceans nearby, or famous landmarks (without naming the country) — answer truthfully and helpfully.
+- For yes/no questions, start with "Yes" or "No" and add a tiny friendly detail.
+- Use simple words a 7-year-old understands. Emojis are okay (max 1).
+
+Return strict JSON: {"answer": "your short answer"}`;
+    const content = await callAI(
+      [
+        { role: "system", content: "You are a kind, playful helper for kids. Always respond with valid JSON." },
+        { role: "user", content: prompt },
+      ],
+      { json: true },
+    );
+    try {
+      const parsed = JSON.parse(content);
+      if (typeof parsed.answer === "string" && parsed.answer.trim()) {
+        return { answer: parsed.answer.trim() };
+      }
+    } catch {
+      // fall through
+    }
+    return { answer: "Hmm, I'm not sure how to answer that one! Try guessing 😊" };
+  });
