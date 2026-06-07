@@ -1,8 +1,8 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Lightbulb, Send, Trophy, RefreshCw } from "lucide-react";
-import { startRound } from "@/lib/game.functions";
+import { ArrowLeft, Lightbulb, Send, Trophy, RefreshCw, HelpCircle, MessageCircleQuestion } from "lucide-react";
+import { askQuestion, startRound } from "@/lib/game.functions";
 import { matchesCountry, type Country } from "@/lib/countries";
 
 export const Route = createFileRoute("/play/$mode")({
