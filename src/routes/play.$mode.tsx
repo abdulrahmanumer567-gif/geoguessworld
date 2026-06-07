@@ -76,6 +76,10 @@ function Play() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!secret || !guess.trim() || feedback?.kind === "right") return;
+    if (guess.trim().toLowerCase() === "give up") {
+      giveUp();
+      return;
+    }
     const fakeCountry = { ...secret, difficulty } as Country;
     if (matchesCountry(guess, fakeCountry)) {
       const earned = Math.max(10, POINTS[difficulty] - (revealed - 1) * 15 - tries * 5);
