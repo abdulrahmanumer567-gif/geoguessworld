@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "GeoGuessWorld" },
+      { name: "description", content: "GeoGuessWorld Is Learning Game" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "GeoGuessWorld" },
+      { property: "og:description", content: "GeoGuessWorld Is Learning Game" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "GeoGuessWorld" },
+      { name: "twitter:description", content: "GeoGuessWorld Is Learning Game" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/cab552f3-6c5e-43a7-8db3-37d5d8cc53b4" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/cab552f3-6c5e-43a7-8db3-37d5d8cc53b4" },
     ],
     links: [
       {
